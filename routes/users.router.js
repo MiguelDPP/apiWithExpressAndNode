@@ -34,8 +34,8 @@ router.post('/',
   async (req, res, next) => {
     try {
       const body = req.body;
-      const newCategory = await service.create(body);
-      res.status(201).json(newCategory);
+      const newUser = await service.create(body);
+      res.status(201).json(newUser);
     } catch (error) {
       next(error);
     }
@@ -63,7 +63,9 @@ router.delete('/:id',
     try {
       const { id } = req.params;
       await service.delete(id);
-      res.status(201).json({id});
+      res.status(204).json({
+        message: 'User deleted',
+      });
     } catch (error) {
       next(error);
     }

@@ -1,4 +1,9 @@
-function logErrors (err, req, res, next) {
+const { ValidationError,
+  // Error global de sequelize
+  DatabaseError
+} = require('sequelize');
+
+function logErrors(err, req, res, next) {
   console.error(err);
   next(err);
 }
@@ -19,5 +24,18 @@ function boomErrorHandler(err, req, res, next) {
   }
 }
 
+function ormErrorHandler(err, req, res, next) {
+  if (err instanceof ValidationError || err instanceof DatabaseError) {
+    res.status(400).json({
+      statusCode: 400,
+      message: err.message,
+      errors: err.errors,
+    });
 
-module.exports = { logErrors, errorHandler, boomErrorHandler }
+  } else {
+    console.error("No es un error de validación");
+    next(err);
+  }
+}
+
+module.exports = { logErrors, errorHandler, boomErrorHandler, ormErrorHandler }

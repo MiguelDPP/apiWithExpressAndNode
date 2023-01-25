@@ -1,31 +1,63 @@
 const boom = require('@hapi/boom');
+const { models } = require('../libs/sequelize');
 
-class OrderService {
+const baseService = require('./base.service');
 
-  constructor(){
+class OrderService extends baseService {
+
+  constructor() {
+    super(models.Order, 'Order');
   }
-  async create(data) {
-    return data;
-  }
+  // async create(data) {
+  //   return data;
+  // }
 
   async find() {
-    return [];
+    const rta = await this.model.findAll({
+      include: [{
+        association: 'customer',
+        // attributes: ['id', 'name', 'email'],
+        include: ['user'],
+      }],
+    });
+    return rta;
   }
 
   async findOne(id) {
-    return { id };
+    const rta = await this.model.findByPk(id, {
+      include: [{
+        association: 'customer',
+        // attributes: ['id', 'name', 'email'],
+        include: ['user'],
+      },
+        'products'],
+    });
+    if (!rta) {
+      throw boom.notFound('Order not found');
+    }
+    return rta;
   }
 
-  async update(id, changes) {
-    return {
-      id,
-      changes,
-    };
+  async addItem(data) {
+    // const { orderId, productId, quantity } = data;
+    const newItem = await models.OrderProduct.create(data);
+    return newItem;
   }
 
-  async delete(id) {
-    return { id };
-  }
+  // async findOne(id) {
+  //   return { id };
+  // }
+
+  // async update(id, changes) {
+  //   return {
+  //     id,
+  //     changes,
+  //   };
+  // }
+
+  // async delete(id) {
+  //   return { id };
+  // }
 
 }
 

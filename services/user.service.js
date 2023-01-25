@@ -1,30 +1,36 @@
-const boom = require('@hapi/boom');
+// const boom = require('@hapi/boom');
 
-class UserService {
-  constructor() {}
+// const pool = require('../libs/postgres.pool');
+const baseService = require('./base.service');
+const { models } = require('../libs/sequelize');
 
-  async create(data) {
-    return data;
+class UserService extends baseService {
+  constructor() {
+    super(models.User, 'User');
   }
 
   async find() {
-    return [];
+    const rta = await this.model.findAll({
+      include: ['customer']
+    });
+    return rta;
   }
 
-  async findOne(id) {
-    return { id };
-  }
+  // async findOne(id) {
 
-  async update(id, changes) {
-    return {
-      id,
-      changes,
-    };
-  }
+  // }
 
-  async delete(id) {
-    return { id };
-  }
+  // async update(id, changes) {
+  //   return {
+  //     id,
+  //     changes,
+  //   };
+  // }
+
+  // async delete(id) {
+  //   return { id };
+  // }
+
 }
 
 module.exports = UserService;

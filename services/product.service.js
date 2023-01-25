@@ -1,71 +1,109 @@
-const faker = require('faker');
+const { models } = require('../libs/sequelize');
+const baseService = require('./base.service');
 const boom = require('@hapi/boom');
+const { Op } = require('sequelize');
 
-class ProductsService {
+class ProductsService extends baseService {
 
-  constructor(){
-    this.products = [];
-    this.generate();
+  constructor() {
+    super(models.Product);
+    // this.products = [];
+    // this.generate();
+    // this.sequelize = sequelize;
+    // this.pool.on('error', (err, client) => {
+    //   console.error('Unexpected error on idle client', err);
+    //   // process.exit(-1);
+    // });
   }
 
-  generate() {
-    const limit = 100;
-    for (let index = 0; index < limit; index++) {
-      this.products.push({
-        id: faker.datatype.uuid(),
-        name: faker.commerce.productName(),
-        price: parseInt(faker.commerce.price(), 10),
-        image: faker.image.imageUrl(),
-        isBlock: faker.datatype.boolean(),
-      });
+
+  // async create(data) {
+  //   const newProduct = {
+  //     id: faker.datatype.uuid(),
+  //     ...data
+  //   }
+  //   this.products.push(newProduct);
+  //   return newProduct;
+  // }
+
+  async find(query) {
+    const options = {
+      include: ['category'],
+      where: {}
+    };
+    const { limit, offset } = query;
+    if (limit && offset) {
+      options.limit = limit;
+      options.offset = offset;
     }
-  }
-
-  async create(data) {
-    const newProduct = {
-      id: faker.datatype.uuid(),
-      ...data
+    const { price } = query;
+    if (price) {
+      options.where.price = price;
     }
-    this.products.push(newProduct);
-    return newProduct;
-  }
 
-  find() {
-    return this.products;
+    const { price_min, price_max } = query;
+    if (price_min && price_max) {
+      options.where.price = {
+        [Op.between]: [price_min, price_max]
+      };
+    }
+
+    // const query = 'SELECT * FROM tasks';
+    // const rta = await this.pool.query(query);
+    // return rta.rows;
+
+    const rta = await this.model.findAll(options);
+    return rta;
   }
 
   async findOne(id) {
-    const product = this.products.find(item => item.id === id);
-    if (!product) {
+    const rta = await this.model.findByPk(id, {
+      include: ['category']
+    });
+    if (!rta) {
       throw boom.notFound('product not found');
     }
-    if (product.isBlock) {
-      throw boom.conflict('product is block');
-    }
-    return product;
+    return rta;
   }
 
-  async update(id, changes) {
-    const index = this.products.findIndex(item => item.id === id);
-    if (index === -1) {
-      throw boom.notFound('product not found');
-    }
-    const product = this.products[index];
-    this.products[index] = {
-      ...product,
-      ...changes
-    };
-    return this.products[index];
-  }
+  // async findOne(id) {
+  //   // const product = this.products.find(item => item.id === id);
+  //   // if (!product) {
+  //   //   throw boom.notFound('product not found');
+  //   // }
+  //   // if (product.isBlock) {
+  //   //   throw boom.conflict('product is block');
+  //   // }
+  //   // return product;
+  //   const query = `SELECT * FROM tasks WHERE id = '${id}'`;
+  //   const rta = await this.sequelize.query(query);
+  //   if (rta.length === 0) {
+  //     throw boom.notFound('product not found');
+  //   }
+  //   return rta[0];
+  // }
 
-  async delete(id) {
-    const index = this.products.findIndex(item => item.id === id);
-    if (index === -1) {
-      throw boom.notFound('product not found');
-    }
-    this.products.splice(index, 1);
-    return { id };
-  }
+  // async update(id, changes) {
+  //   const index = this.products.findIndex(item => item.id === id);
+  //   if (index === -1) {
+  //     throw boom.notFound('product not found');
+  //   }
+  //   const product = this.products[index];
+  //   this.products[index] = {
+  //     ...product,
+  //     ...changes
+  //   };
+  //   return this.products[index];
+  // }
+
+  // async delete(id) {
+  //   const index = this.products.findIndex(item => item.id === id);
+  //   if (index === -1) {
+  //     throw boom.notFound('product not found');
+  //   }
+  //   this.products.splice(index, 1);
+  //   return { id };
+  // }
 
 }
 
