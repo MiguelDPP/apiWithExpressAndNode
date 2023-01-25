@@ -9,7 +9,7 @@ const URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${
 
 const sequelize = new Sequelize(URI, {
   dialect: 'postgres',
-  logging: console.log, // set to console.log to see the raw SQL queries
+  // logging: console.log, // set to console.log to see the raw SQL queries
   // if you want to change time zone to UTC -5
   timezone: 'UTC',
   dialectOptions: {
