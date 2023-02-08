@@ -44,6 +44,22 @@ class OrderService extends baseService {
     return newItem;
   }
 
+  async ordersByUser(userId) {
+    const rta = await this.model.findAll({
+      where: {
+        '$customer.user_id$': userId,
+      },
+      include: [{
+        association: 'customer',
+        // attributes: ['id', 'name', 'email'],
+        include: ['user'],
+      },
+        'products'],
+    });
+
+    return rta;
+  }
+
   // async findOne(id) {
   //   return { id };
   // }

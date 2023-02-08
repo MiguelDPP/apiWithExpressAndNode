@@ -1,4 +1,5 @@
 const { Model, DataTypes, Sequelize } = require('sequelize');
+const bcrypt = require('bcrypt');
 
 const USER_TABLE = 'users';
 
@@ -36,11 +37,20 @@ const UserSchema = {
     //     msg: 'La contraseña debe tener entre 6 y 20 caracteres'
     //   }
     // }
+    // Ocultar el password
+    // get() {
+    //   return () => this.getDataValue('password');
+    // },
   },
   role: {
     allowNull: false,
     type: DataTypes.STRING,
     defaultValue: 'customer'
+  },
+  recoveryToken: {
+    allowNull: true,
+    type: DataTypes.STRING,
+    field: 'recovery_token'
   },
   createdAt: {
     allowNull: false,
@@ -75,6 +85,13 @@ class User extends Model {
       timestamps: true, // true by default
       // Cambiar zona horaria
       timezone: 'UTC-5',
+      hooks: {
+        beforeCreate: async (user) => {
+          user.password = await bcrypt.hash(user.password, 10);
+        },
+
+
+      }
 
 
       // If you don't want createdAt

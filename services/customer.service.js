@@ -15,7 +15,12 @@ class CustomerService extends baseService {
 
   async find() {
     const rta = await this.model.findAll({
-      include: ['user']
+      include: [
+        {
+          association: 'user',
+          attributes: { exclude: ['password'] },
+        }
+      ]
     });
     return rta;
   }

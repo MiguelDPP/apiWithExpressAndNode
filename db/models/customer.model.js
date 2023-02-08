@@ -1,4 +1,5 @@
 const { Model, DataTypes, Sequelize } = require('sequelize');
+const bcrypt = require('bcrypt');
 
 const CUSTOMER_TABLE = 'customers';
 const { USER_TABLE } = require('./user.model');

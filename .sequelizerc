@@ -3,5 +3,5 @@ module.exports = {
   'models-path': './db/models/', //donde va encontrar los modelos
   'migrations-path': './db/migrations/', //donde va encontrar las migraciones
   'seeders-path': './db/seeders/', //donde va encontrar los seeders
-  'env': 'production' //el ambiente en el que se va a ejecutar
+  // 'env': 'production' //el ambiente en el que se va a ejecutar
 }

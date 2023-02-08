@@ -3,6 +3,7 @@ const express = require('express');
 const UserService = require('./../services/user.service');
 const validatorHandler = require('./../middlewares/validator.handler');
 const { updateUserSchema, createUserSchema, getUserSchema } = require('./../schemas/user.schema');
+const clearPassword = require('./../middlewares/clearPassword.handler');
 
 const router = express.Router();
 const service = new UserService();
@@ -11,10 +12,14 @@ router.get('/', async (req, res, next) => {
   try {
     const categories = await service.find();
     res.json(categories);
+    // req.user = categories;
+    // next();
   } catch (error) {
     next(error);
   }
-});
+},
+  // clearPassword
+);
 
 router.get('/:id',
   validatorHandler(getUserSchema, 'params'),
